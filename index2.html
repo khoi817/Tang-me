@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Gửi Mẹ Yêu — 3D WebGL</title>
+  <link rel="stylesheet" href="style2.css" />
+</head>
+<body>
+  <div id="ui">
+    <h1>Chúc Mừng Ngày 20/10 — Mẹ Yêu 💐</h1>
+    <p class="hint">Nghiêng/di chuyển điện thoại để thay đổi góc nhìn. Chạm 1 lần nếu nhạc bị chặn.</p>
+    <button id="btnWish" class="btn">💌 Gửi lời chúc</button>
+  </div>
+
+  <!-- threejs canvas container -->
+  <div id="canvas-wrap"></div>
+
+  <!-- modal to edit message -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-inner">
+      <h3>Gửi lời chúc tới mẹ</h3>
+      <textarea id="msgInput">Con chúc mẹ luôn mạnh khỏe, bình an và hạnh phúc mãi bên con 💖</textarea>
+      <div class="modal-actions">
+        <button id="cancel" class="btn outline">Hủy</button>
+        <button id="apply" class="btn">Gửi & Hiện</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgAudio" loop preload="auto"
+         src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a70595de1.mp3?filename=acoustic-guitar-ambient-10741.mp3"></audio>
+
+  <!-- Three.js + loaders from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/loaders/FontLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/geometries/TextGeometry.js"></script>
+  <script src="2.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+:root{
+  --bg:#fff6fb;
+  --card: rgba(255,255,255,0.65);
+  --muted:#444;
+  --accent:#ff6b7a;
+  --glass: rgba(255,255,255,0.6);
+}
+
+/* page */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+body{
+  background: linear-gradient(140deg,#fff0f5,#fff8fb);
+  display:flex;align-items:flex-start;justify-content:center;padding:18px 12px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* UI over scene */
+#ui{
+  position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:60;text-align:center;width:min(640px,94%);
+  pointer-events:auto;
+}
+#ui h1{margin:0;font-size:clamp(18px,5vw,28px);font-weight:800;
+  background:linear-gradient(90deg,#ff5a7a,#ffd1e8,#a57cff);-webkit-background-clip:text;color:transparent;}
+#ui .hint{margin:6px 0 10px;color:var(--muted);font-size:13px}
+.btn{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,#ff9aa8,#ffd6e8);font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(255,100,140,0.14)}
+.btn.outline{background:transparent;border:2px solid rgba(0,0,0,0.06);box-shadow:none}
+
+/* canvas container fills screen area */
+#canvas-wrap{position:fixed;inset:0;z-index:1;pointer-events:auto}
+
+/* modal */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,6,6,0.36);opacity:0;pointer-events:none;transition:opacity .18s;z-index:120}
+.modal.open{opacity:1;pointer-events:auto}
+.modal-inner{width:92%;max-width:420px;background:white;border-radius:12px;padding:14px;box-shadow:0 14px 48px rgba(0,0,0,0.14)}
+.modal-inner h3{margin:0 0 8px}
+.modal-inner textarea{width:100%;min-height:120px;border-radius:8px;padding:10px;border:1px solid #efecec;font-size:15px;resize:vertical}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+/* small overlay note when mobile */
+.mobile-note{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);background:var(--glass);padding:8px 12px;border-radius:999px;z-index:70;font-weight:700;color:#222;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:none}
+@media (max-width:900px){ .mobile-note{display:block} }
+
+/* ensure canvases & renderer cover area */
+canvas{display:block}
