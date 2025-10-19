@@ -3,37 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gửi Mẹ — Thư 20/10</title>
-  <link rel="stylesheet" href="style2.css">
-  <!-- Three.js -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <title>Mini-game: Săn trái tim — Gửi Mẹ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- BG gradient (behind everything) -->
-  <div id="bgGradient"></div>
-
-  <!-- Centered image (mom) -->
-  <div id="centerFrame">
-    <img id="momImg"
-         src="https://i.postimg.cc/wM0RX97K/IMG-20240907-115201.jpg"
-         alt="Ảnh mẹ">
+  <!-- rules popup -->
+  <div id="rulesOverlay" class="overlay active">
+    <div class="modal rules">
+      <h2>💌 Luật chơi</h2>
+      <p>Bấm vào những trái tim đang di chuyển để thu thập. Mỗi lần thu, trái tim sẽ chạy nhanh hơn một chút.<br>Thu đủ <strong>10/10</strong> sẽ hiện bức thư đặc biệt.</p>
+      <button id="startBtn" class="btn">Bắt đầu</button>
+    </div>
   </div>
 
-  <!-- Mail button (popup) -->
-  <button id="mailBtn" class="mailBtn" aria-label="Mở thư gửi mẹ">
-    <span class="mailEmoji">💌</span>
-    <span class="mailText">Nhấn để mở thư</span>
-  </button>
+  <!-- top HUD -->
+  <header id="hud">
+    <div id="progress" class="progress">0 / 10 ❤️</div>
+  </header>
 
-  <!-- Three canvas -->
-  <canvas id="threeCanvas"></canvas>
+  <!-- main stage -->
+  <main id="stage">
+    <div id="momWrap">
+      <img id="momImg" src="https://i.postimg.cc/wM0RX97K/IMG-20240907-115201.jpg" alt="Mẹ">
+    </div>
 
-  <!-- Orbiting text container (JS will populate spans) -->
-  <div id="orbitContainer" aria-hidden="true"></div>
+    <!-- hidden preloaded sprite -->
+    <img id="heartSprite" src="" alt="heart" style="display:none" aria-hidden="true">
 
-  <!-- Confetti canvas (light) -->
-  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+    <!-- canvas for DVD heart (visible) -->
+    <canvas id="dvdCanvas"></canvas>
 
-  <script src="2.js"></script>
+    <!-- confetti canvas -->
+    <canvas id="confettiCanvas" class="hidden"></canvas>
+  </main>
+
+  <!-- letter popup (after win) -->
+  <div id="letterOverlay" class="overlay hidden">
+    <div class="modal letter">
+      <div class="letter-emoji">💌</div>
+      <h2>Gửi Mẹ yêu</h2>
+      <p class="wish">Con chúc mẹ luôn mạnh khỏe, hạnh phúc và mỉm cười mỗi ngày ❤️</p>
+      <button id="closeLetter" class="btn">Đóng</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
