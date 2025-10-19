@@ -1,28 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thư gửi Mẹ 💌</title>
-  <link rel="stylesheet" href="style2.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gửi Mẹ — Thư yêu 20/10</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Three.js -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
 </head>
 <body>
-  <div id="background"></div>
+  <!-- BG gradient (behind everything) -->
+  <div id="bgGradient"></div>
 
-  <div id="letter" class="letter">
-    💌
-    <p>Nhấn để mở thư gửi Mẹ</p>
+  <!-- Centered image (mom) -->
+  <div id="centerFrame">
+    <img id="momImg"
+         src="https://i.postimg.cc/wM0RX97K/IMG-20240907-115201.jpg"
+         alt="Ảnh mẹ">
   </div>
 
-  <div id="scene" class="hidden">
-    <img id="momImage" src="https://i.postimg.cc/wM0RX97K/IMG-20240907-115201.jpg" alt="Mẹ" class="mom-img">
-    <canvas id="heartCanvas"></canvas>
-    <div class="message">
-      Cảm ơn mẹ vì đã luôn yêu thương, hy sinh và chăm sóc con 💖
-    </div>
-  </div>
+  <!-- Mail button (popup) -->
+  <button id="mailBtn" class="mailBtn" aria-label="Mở thư gửi mẹ">
+    <span class="mailEmoji">💌</span>
+    <span class="mailText">Nhấn để mở thư</span>
+  </button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="2.js"></script>
+  <!-- Three canvas -->
+  <canvas id="threeCanvas"></canvas>
+
+  <!-- Orbiting text container (JS will populate spans) -->
+  <div id="orbitContainer" aria-hidden="true"></div>
+
+  <!-- Confetti canvas (light) -->
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <script src="script.js"></script>
 </body>
 </html>
