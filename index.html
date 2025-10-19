@@ -1,22 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chúc Mừng Ngày 20/10 - Mẹ Yêu</title>
-  <link rel="stylesheet" href="style2.css" />
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Gửi mẹ — Thư yêu 20/10</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Three.js từ CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-  <div class="content">
-    <h1>Chúc Mừng Ngày 20/10 💐</h1>
-    <h2>Mẹ Yêu</h2>
-    <p class="subtext">Mẹ là người phụ nữ tuyệt vời nhất trên đời 💖</p>
+  <!-- blurred background (image mẹ) -->
+  <div id="bgPhoto" aria-hidden="true"></div>
+
+  <!-- UI overlay -->
+  <div id="ui">
+    <h1 class="title">Gửi mẹ yêu 💐</h1>
+    <p class="hint">Chạm vào bức thư để mở lời chúc</p>
   </div>
 
-  <canvas id="heartCanvas"></canvas>
+  <!-- mail icon (pop-up after delay) -->
+  <button id="mailBtn" class="mail-btn" aria-label="Mở thư gửi mẹ" title="Nhấn để mở thư">
+    <div class="mail-icon">💌</div>
+    <div class="mail-label">Mở thư</div>
+  </button>
 
-  <script src="2.js"></script>
+  <!-- canvas for Three.js heart -->
+  <div id="sceneWrap">
+    <canvas id="threeCanvas"></canvas>
+  </div>
+
+  <!-- rotating orbit text overlay (HTML spans) -->
+  <div id="orbitText" aria-hidden="true"></div>
+
+  <!-- confetti canvas -->
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <!-- modal not needed, we edit message directly in JS if wanted later -->
+
+  <!-- background audio (will attempt play on click) -->
+  <audio id="bgAudio" loop preload="auto"
+         src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a70595de1.mp3?filename=acoustic-guitar-ambient-10741.mp3"></audio>
+
+  <script src="script.js"></script>
 </body>
 </html>
