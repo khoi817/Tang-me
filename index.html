@@ -1,47 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Gửi mẹ — Thư yêu 20/10</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thư gửi Mẹ 💌</title>
   <link rel="stylesheet" href="style2.css">
-  <!-- Three.js từ CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-  <!-- blurred background (image mẹ) -->
-  <div id="bgPhoto" aria-hidden="true"></div>
+  <div id="background"></div>
 
-  <!-- UI overlay -->
-  <div id="ui">
-    <h1 class="title">Gửi mẹ yêu 💐</h1>
-    <p class="hint">Chạm vào bức thư để mở lời chúc</p>
+  <div id="letter" class="letter">
+    💌
+    <p>Nhấn để mở thư gửi Mẹ</p>
   </div>
 
-  <!-- mail icon (pop-up after delay) -->
-  <button id="mailBtn" class="mail-btn" aria-label="Mở thư gửi mẹ" title="Nhấn để mở thư">
-    <div class="mail-icon">💌</div>
-    <div class="mail-label">Mở thư</div>
-  </button>
-
-  <!-- canvas for Three.js heart -->
-  <div id="sceneWrap">
-    <canvas id="threeCanvas"></canvas>
+  <div id="scene" class="hidden">
+    <img id="momImage" src="URL_ẢNH_CỦA_BẠN" alt="Mẹ" class="mom-img">
+    <canvas id="heartCanvas"></canvas>
+    <div class="message">
+      Cảm ơn mẹ vì đã luôn yêu thương, hy sinh và chăm sóc con 💖
+    </div>
   </div>
 
-  <!-- rotating orbit text overlay (HTML spans) -->
-  <div id="orbitText" aria-hidden="true"></div>
-
-  <!-- confetti canvas -->
-  <canvas id="confetti" aria-hidden="true"></canvas>
-
-  <!-- modal not needed, we edit message directly in JS if wanted later -->
-
-  <!-- background audio (will attempt play on click) -->
-  <audio id="bgAudio" loop preload="auto"
-         src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a70595de1.mp3?filename=acoustic-guitar-ambient-10741.mp3"></audio>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="2.js"></script>
 </body>
 </html>
