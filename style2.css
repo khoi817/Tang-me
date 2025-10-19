@@ -1,72 +1,58 @@
 :root{
-  --bgA: #fff4fb;
-  --bgB: #f6e8ff;
+  --bgA: #fff6fb;
+  --bgB: #f3e8ff;
   --accent: #ff6b7a;
-  --frameW: min(68vw, 420px);
+  --hud-bg: rgba(255,255,255,0.9);
 }
 
 /* reset */
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased}
-body{background:linear-gradient(160deg,var(--bgA),var(--bgB));display:flex;align-items:center;justify-content:center;overflow:hidden}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased}
+body{background:linear-gradient(140deg,var(--bgA),var(--bgB));overflow:hidden}
 
-/* subtle gradient background (behind everything) */
-#bgGradient{
-  position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 10% 10%, rgba(255,220,240,0.35), rgba(230,230,255,0.15));
+/* overlay (rules or letter) */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:60;pointer-events:auto}
+.overlay.hidden{display:none}
+.overlay.active{display:flex}
+
+/* modal boxes */
+.modal{background:linear-gradient(180deg,#fff,#fff7fb);padding:18px;border-radius:12px;max-width:92%;width:420px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,0.18)}
+.modal h2{margin:0 0 8px;font-size:20px}
+.modal p{color:#5b3a45;line-height:1.35}
+.btn{margin-top:12px;padding:10px 14px;border-radius:10px;border:0;font-weight:800;background:linear-gradient(90deg,#ff7f9c,#ffbfcf);cursor:pointer}
+
+/* HUD progress top-left */
+#hud{position:fixed;top:14px;left:14px;z-index:50}
+.progress{
+  background:var(--hud-bg);padding:8px 12px;border-radius:999px;font-weight:900;color:#6b2b3a;box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  transition: transform .36s cubic-bezier(.2,.9,.2,1), color .25s, text-shadow .25s;
+  font-size:16px;
+}
+.progress.animate{
+  color:#07c160; /* green */
+  transform: scale(1.36);
+  text-shadow: 0 6px 24px rgba(7,193,96,0.22);
 }
 
-/* center frame for mom image */
-#centerFrame{position:relative;z-index:6;display:grid;place-items:center;pointer-events:none}
-#centerFrame img#momImg{
-  width:var(--frameW);
-  height:auto;
-  max-height:72vh;
-  border-radius:16px;
-  object-fit:cover;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.20), 0 6px 18px rgba(255,120,150,0.06);
-  transform: translateZ(0);
-  border: 6px solid rgba(255,255,255,0.65);
-}
+/* stage */
+#stage{position:relative;width:100%;height:100vh;display:grid;place-items:center}
 
-/* mail button (appears on top of image initially) */
-.mailBtn{
-  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;
-  width:120px;height:120px;border-radius:18px;border:0;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,#fff,#fff6fa);box-shadow:0 18px 50px rgba(0,0,0,0.16);
-  transition:transform .28s cubic-bezier(.2,.9,.2,1),opacity .3s;
-  pointer-events:auto;
-}
-.mailBtn.hidden{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.9)}
-.mailEmoji{font-size:42px;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.18))}
-.mailText{margin-top:8px;font-weight:800;color:#7a5566;font-size:13px}
+/* mom image (tilt effect via JS) */
+#momWrap{width:min(72vw,520px);pointer-events:none;perspective:1200px;z-index:10}
+#momImg{width:100%;height:auto;border-radius:16px;border:6px solid rgba(255,255,255,0.8);box-shadow:0 28px 80px rgba(0,0,0,0.2);transform:translateZ(0);will-change:transform}
 
-/* three canvas (cover whole area, z above bg but under image + orbit text) */
-#threeCanvas{
-  position:fixed;inset:0;z-index:5;pointer-events:none;display:block;width:100%;height:100%;
-}
+/* DVD canvas covers whole screen and accepts clicks */
+#dvdCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:30;pointer-events:auto}
 
-/* orbit text container sits above canvas but below mom image so text loops around heart under the image's bottom area */
-#orbitContainer{
-  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:7;pointer-events:none;width:1px;height:1px;
-}
-#orbitContainer span{
-  position:absolute;left:0;top:0;transform-origin:0 0;
-  padding:6px 10px;border-radius:10px;background:linear-gradient(90deg,#ff7f9c,#ffbfcf);
-  color:white;font-weight:800;font-size:clamp(12px,3vw,15px);white-space:nowrap;
-  box-shadow:0 8px 20px rgba(255,110,140,0.14);
-}
+/* confetti canvas (hidden until used) */
+#confettiCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:70;pointer-events:none}
 
-/* confetti canvas */
-#confettiCanvas{position:fixed;inset:0;z-index:8;pointer-events:none}
+/* small letter modal style */
+.letter .letter-emoji{font-size:44px}
+.letter .wish{color:#6b2b3a;font-weight:700;margin:12px 0 14px}
 
-/* message style (in case you want a center label) */
-.centerLabel{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:35;color:#59323e;font-weight:700;background:rgba(255,255,255,0.6);padding:8px 12px;border-radius:999px;backdrop-filter:blur(6px);}
-
-/* responsiveness */
+/* responsive tweaks */
 @media (max-width:420px){
-  .mailBtn{width:96px;height:96px}
-  .mailEmoji{font-size:36px}
-  #centerFrame img#momImg{width:86vw;max-width:none}
-  #orbitContainer span{font-size:12px;padding:5px 8px}
+  .modal{width:92%}
+  .progress{font-size:14px}
 }
