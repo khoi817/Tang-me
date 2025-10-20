@@ -1,49 +1,45 @@
-/* script.js
-   Full behaviour:
-   - Rules popup on load -> Start button begins game
-   - Heart (PNG/SVG sprite) moves DVD-style; click to collect
-   - HUD progress (0/10) displayed top-left, animates green when collect
-   - After 10, letter appears; clicking letter opens and types heartfelt message
-   - Mom image tilt via mouse/device orientation
-   - Confetti on collect + win
-   - Background music (plays after user clicks Start)
+/* Full behaviour:
+ - rules popup -> start
+ - DVD-heart (svg dataurl) moves & bounces; click to collect; progress top-left animates green when collect
+ - when collected == TARGET -> letter popup appears (closed)
+ - click inside letter modal -> "open" step-by-step: 3 parts, each shown after pressing Next
+ - final step: many hearts (small + some big) fly up (canvas) and glow
+ - mom image tilt (mouse/device orientation) but no jitter on click
+ - no audio
 */
 
 /* ---------- CONFIG ---------- */
 const TARGET = 10;
-const MESSAGE_LINES = [
-  "Gửi Mẹ yêu của con,",
-  "",
-  "Con biết con không phải lúc nào cũng giỏi nói lời yêu thương,",
-  "nhưng trong lòng con, mẹ luôn là người đặc biệt nhất.",
-  "",
-  "Cảm ơn mẹ vì đã hy sinh, lo lắng và dạy dỗ con từng chút một.",
-  "Cảm ơn mẹ vì đã luôn ở đó, dù con có thất bại hay vụng về thế nào đi nữa.",
-  "",
-  "Nhân ngày 20/10 này, con chỉ muốn nói một điều giản dị —",
-  "rằng con yêu mẹ rất nhiều.",
-  "",
-  "Chúc mẹ luôn mạnh khỏe, luôn cười thật tươi, và hạnh phúc bên con mãi mãi. ❤️"
+const PARTS = [
+  `💌 Gửi Mẹ yêu của con,\n\nCon biết rằng con không phải lúc nào cũng giỏi nói lời yêu thương,\nnhưng trong lòng con, mẹ luôn là người đặc biệt nhất.`,
+  `Cảm ơn mẹ vì đã hy sinh, lo lắng và dạy dỗ con từng chút một.\nCảm ơn mẹ vì đã luôn ở đó, dù con có thất bại hay vụng về thế nào đi nữa.`,
+  `Nhân ngày 20/10 này, con chỉ muốn nói một điều giản dị — rằng con yêu mẹ rất nhiều.\n\nChúc mẹ luôn mạnh khỏe, luôn cười thật tươi, và hạnh phúc bên con mãi mãi. ❤️`
 ];
-// background audio (picked gentle track)
-const BG_AUDIO_SRC = document.getElementById('bgAudio').src;
 
 /* ---------- DOM ---------- */
 const rulesOverlay = document.getElementById('rulesOverlay');
 const startBtn = document.getElementById('startBtn');
 const dvdCanvas = document.getElementById('dvdCanvas');
 const ctx = dvdCanvas.getContext('2d');
-const confCanvas = document.getElementById('confettiCanvas');
-const confCtx = confCanvas.getContext('2d');
+const floatCanvas = document.getElementById('floatCanvas');
+const floatCtx = floatCanvas.getContext('2d');
 const heartImgEl = document.getElementById('heartSprite');
 const momImg = document.getElementById('momImg');
 const progressEl = document.getElementById('progress');
 const letterOverlay = document.getElementById('letterOverlay');
 const letterBody = document.getElementById('letterBody');
-const closeLetter = document.getElementById('closeLetter');
-const bgAudio = document.getElementById('bgAudio');
+const nextBtn = document.getElementById('nextBtn');
 
-/* ---------- HEART SPRITE (SVG data URL) ---------- */
+let W = innerWidth, H = innerHeight;
+function resize(){
+  W = innerWidth; H = innerHeight;
+  dvdCanvas.width = W; dvdCanvas.height = H;
+  floatCanvas.width = W; floatCanvas.height = H;
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ---------- Heart sprite (SVG data url) ---------- */
 const HEART_SVG = encodeURIComponent(
 `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 110'>
   <defs><filter id='f' x='-50%' y='-50%' width='200%' height='200%'>
@@ -56,31 +52,23 @@ const HEART_SVG = encodeURIComponent(
   </g>
 </svg>`
 );
-const HEART_SRC = `data:image/svg+xml;utf8,${HEART_SVG}`;
-heartImgEl.src = HEART_SRC;
+heartImgEl.src = `data:image/svg+xml;utf8,${HEART_SVG}`;
 
-/* ---------- canvas size ---------- */
-let W = window.innerWidth, H = window.innerHeight;
-function resize() {
-  W = window.innerWidth; H = window.innerHeight;
-  dvdCanvas.width = W; dvdCanvas.height = H;
-  confCanvas.width = W; confCanvas.height = H;
-}
-window.addEventListener('resize', resize);
-resize();
-
-/* ---------- mom tilt (mouse + device orientation) ---------- */
+/* ---------- MOTHER IMAGE TILT (smooth) ---------- */
 const maxTilt = 12;
-function applyTilt(mx, my){
+let tiltTimeout = null;
+function applyTilt(mx,my){
   const rx = my * maxTilt;
   const ry = -mx * (maxTilt * 0.9);
-  const tz = 8 + Math.abs(my) * 8;
+  const tz = 6 + Math.abs(my) * 6;
   momImg.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(${tz}px)`;
 }
 window.addEventListener('mousemove', e=>{
   const mx = (e.clientX / W)*2 - 1;
   const my = (e.clientY / H)*2 - 1;
   applyTilt(mx,my);
+  clearTimeout(tiltTimeout);
+  tiltTimeout = setTimeout(()=> momImg.style.transform = '', 1400);
 });
 window.addEventListener('deviceorientation', ev=>{
   if(ev.gamma==null && ev.beta==null) return;
@@ -88,20 +76,15 @@ window.addEventListener('deviceorientation', ev=>{
   const ny = Math.max(-30, Math.min(30, (ev.beta||0)-20))/30;
   applyTilt(nx, ny);
 }, true);
-let restTimer = null;
-window.addEventListener('mousemove', ()=> {
-  clearTimeout(restTimer);
-  restTimer = setTimeout(()=> momImg.style.transform = '', 1400);
-});
 
 /* ---------- GAME STATE ---------- */
 let collected = 0;
 let running = false;
 
-/* Heart actor (DVD) */
+/* DVD heart actor */
 const heart = { x:120, y:120, w:110, h:100, vx:3.2, vy:2.6, angle:0, spin:0.03, alive:false };
 
-/* ---------- spawn & physics ---------- */
+/* spawn heart avoiding mother's face area */
 function spawnHeart(){
   heart.w = Math.max(56, Math.round(W * 0.11));
   heart.h = Math.round(heart.w * 0.92);
@@ -111,7 +94,8 @@ function spawnHeart(){
 
   let sx = (Math.random()<0.6) ? (Math.random()<0.5 ? 40 : W-40) : Math.random()*(W-160)+80;
   let sy = (Math.random()<0.6) ? Math.random()*(H-160)+80 : (Math.random()<0.5 ? 40 : H-40);
-  if (Math.hypot(sx-centerX, sy-centerY) < 160) sx = (sx + 240) % Math.max(W-100,200);
+  // push further if overlapping mom center
+  if(Math.hypot(sx-centerX, sy-centerY) < 180) sx = (sx + 260) % Math.max(W-120,200);
 
   heart.x = sx; heart.y = sy;
   const base = 2.4 + collected*0.15;
@@ -122,66 +106,58 @@ function spawnHeart(){
   heart.alive = true;
 }
 
-/* ---------- draw heart ---------- */
+/* draw heart with glow */
 function drawHeart(){
   const cx = heart.x, cy = heart.y;
-  // glow background
   const glowR = Math.max(heart.w, heart.h) * 0.9;
   const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
-  g.addColorStop(0, 'rgba(255,120,140,0.20)');
+  g.addColorStop(0, 'rgba(255,120,140,0.22)');
   g.addColorStop(0.5, 'rgba(255,120,140,0.08)');
   g.addColorStop(1, 'rgba(255,120,140,0)');
   ctx.fillStyle = g;
   ctx.beginPath(); ctx.arc(cx, cy, glowR, 0, Math.PI*2); ctx.fill();
 
-  // draw rotated heart image
   ctx.save(); ctx.translate(cx, cy); ctx.rotate(heart.angle);
   const iw = heart.w, ih = heart.h;
   ctx.drawImage(heartImgEl, -iw/2, -ih/2, iw, ih);
   ctx.restore();
 }
 
-/* ---------- update physics ---------- */
+/* update physics */
 function updateHeart(){
   if(!heart.alive) return;
   heart.x += heart.vx; heart.y += heart.vy;
-
   if (heart.x - heart.w/2 < 0) { heart.x = heart.w/2; heart.vx *= -1; heart.spin *= -1; }
   if (heart.x + heart.w/2 > W) { heart.x = W - heart.w/2; heart.vx *= -1; heart.spin *= -1; }
   if (heart.y - heart.h/2 < 0) { heart.y = heart.h/2; heart.vy *= -1; heart.spin *= -1; }
   if (heart.y + heart.h/2 > H) { heart.y = H - heart.h/2; heart.vy *= -1; heart.spin *= -1; }
-
   heart.vx *= 0.999; heart.vy *= 0.999;
   const target = Math.atan2(heart.vy, heart.vx);
   heart.angle += (target - heart.angle) * 0.12 + heart.spin*0.02;
 }
 
-/* ---------- pointer detection ---------- */
-function pointInHeart(px, py){
+/* hit test */
+function pointInHeart(px,py){
   const dx = px - heart.x, dy = py - heart.y;
   const s = Math.sin(-heart.angle), c = Math.cos(-heart.angle);
   const lx = dx * c - dy * s, ly = dx * s + dy * c;
   return Math.abs(lx) <= heart.w/2 && Math.abs(ly) <= heart.h/2;
 }
 
-/* ---------- input handlers ---------- */
+/* pointer handling */
 dvdCanvas.addEventListener('pointerdown', (ev)=>{
   if(!running) return;
-  const rect = dvdCanvas.getBoundingClientRect();
   const x = ev.clientX, y = ev.clientY;
-  if(heart.alive && pointInHeart(x,y)){
-    collectHeart();
-  }
+  if(heart.alive && pointInHeart(x,y)) collectHeart();
 }, {passive:true});
 
-/* ---------- collect & HUD ---------- */
+/* collect & HUD animation */
 function collectHeart(){
   heart.alive = false;
   spawnCollectBurst(heart.x, heart.y);
   collected = Math.min(TARGET, collected + 1);
   animateProgress();
   progressEl.textContent = `${collected} / ${TARGET} ❤️`;
-
   if(collected >= TARGET){
     setTimeout(()=> onWin(), 700);
   } else {
@@ -194,132 +170,204 @@ function animateProgress(){
   setTimeout(()=> progressEl.classList.remove('animate'), 520);
 }
 
-/* ---------- confetti ---------- */
-let confetti = [];
-function spawnConfetti(x=W/2, y=H/2, n=60){
+/* small collect burst (confetti squares) */
+let tinyConf = [];
+function spawnCollectBurst(x,y,n=16){
   for(let i=0;i<n;i++){
-    confetti.push({
-      x: x + (Math.random()-0.5)*160,
-      y: y + (Math.random()-0.5)*80,
+    tinyConf.push({
+      x, y,
       vx: (Math.random()-0.5)*6,
-      vy: (Math.random()-0.8)*-6,
-      life: 80 + Math.random()*100,
-      size: 6 + Math.random()*8,
+      vy: (Math.random()-1.5)*6,
+      life: 40 + Math.random()*40,
+      size: 6 + Math.random()*6,
       color: `hsl(${Math.random()*40+320}deg 80% 60%)`
     });
   }
 }
-function spawnCollectBurst(x,y){ spawnConfetti(x,y,18); }
 
-function updateConfetti(){
-  confCtx.clearRect(0,0,W,H);
-  for(let i=confetti.length-1;i>=0;i--){
-    const p = confetti[i];
-    p.vy += 0.18; p.x += p.vx; p.y += p.vy; p.life--;
-    confCtx.fillStyle = p.color; confCtx.fillRect(p.x, p.y, p.size, p.size);
-    if(p.life<=0 || p.y > H+60) confetti.splice(i,1);
+/* update tiny confetti rendered on dvd canvas */
+function updateTinyConf(){
+  for(let i=tinyConf.length-1;i>=0;i--){
+    const p = tinyConf[i];
+    p.vy += 0.25;
+    p.x += p.vx; p.y += p.vy;
+    p.life--;
+    if(p.life<=0 || p.y > H+50) tinyConf.splice(i,1);
   }
-  requestAnimationFrame(updateConfetti);
+}
+
+/* draw tiny confetti */
+function drawTinyConf(){
+  for(const p of tinyConf){
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+  }
+}
+
+/* ---------- finish: floating hearts animation ---------- */
+let floatHearts = [];
+function spawnFloatHearts(){
+  floatCanvas.classList.remove('hidden');
+  floatHearts = [];
+  // many small
+  for(let i=0;i<120;i++){
+    floatHearts.push({
+      x: W/2 + (Math.random()-0.5)*260,
+      y: H*0.7 + Math.random()*60,
+      vx: (Math.random()-0.5)*1.8,
+      vy: - (1 + Math.random()*3),
+      size: 6 + Math.random()*8,
+      alpha: 0,
+      life: 160 + Math.random()*80,
+      hue: 340 + Math.random()*40
+    });
+  }
+  // a few big glowing
+  for(let i=0;i<12;i++){
+    floatHearts.push({
+      x: W/2 + (Math.random()-0.5)*300,
+      y: H*0.75 + Math.random()*80,
+      vx: (Math.random()-0.5)*2.5,
+      vy: - (2 + Math.random()*4),
+      size: 18 + Math.random()*26,
+      alpha: 0,
+      life: 200 + Math.random()*120,
+      hue: 330 + Math.random()*60
+    });
+  }
+}
+
+function updateFloatHearts(){
+  floatCtx.clearRect(0,0,W,H);
+  for(let i=floatHearts.length-1;i>=0;i--){
+    const p = floatHearts[i];
+    p.vy += 0.02; p.x += p.vx; p.y += p.vy;
+    p.alpha = Math.min(1, p.alpha + 0.02);
+    // draw heart as simple filled rotated path
+    floatCtx.save();
+    floatCtx.translate(p.x, p.y);
+    const s = p.size;
+    // glow
+    floatCtx.fillStyle = `rgba(255,180,200,${0.12 * p.alpha})`;
+    floatCtx.beginPath();
+    floatCtx.arc(0, 0, s*1.6, 0, Math.PI*2); floatCtx.fill();
+    // main heart (simple triangle-ish curve using path)
+    floatCtx.fillStyle = `hsl(${p.hue} 80% 60% / ${p.alpha})`;
+    floatCtx.beginPath();
+    floatCtx.moveTo(0, s*0.45);
+    floatCtx.bezierCurveTo(-s, s*1.1, -s*1.2, -s*0.2, 0, -s*0.9);
+    floatCtx.bezierCurveTo(s*1.2, -s*0.2, s, s*1.1, 0, s*0.45);
+    floatCtx.closePath();
+    floatCtx.fill();
+    floatCtx.restore();
+
+    p.life--;
+    if(p.life<=0 || p.y < -80) floatHearts.splice(i,1);
+  }
+  if(floatHearts.length>0) requestAnimationFrame(updateFloatHearts);
+  else floatCanvas.classList.add('hidden');
 }
 
 /* ---------- win sequence & letter open ---------- */
 function onWin(){
-  confCanvas.classList.remove('hidden');
-  spawnConfetti(W/2, H/2 - 80, 180);
-  // show letter (closed)
-  letterOverlay.classList.remove('hidden');
-  letterBody.innerHTML = ''; // ensure empty until open
-  // show large gentle glow behind (one-time)
   // stop heart
   heart.alive = false;
+  // show letter closed modal
+  letterOverlay.classList.remove('hidden');
+  letterBody.innerHTML = ''; // empty until user steps through
+  currentPart = 0;
+  nextBtn.textContent = 'Tiếp theo →';
 }
 
-/* clicking on letter overlay opens message with typewriter */
-letterOverlay.addEventListener('click', (e)=>{
-  // open only if click inside modal (not overlay area)
-  const modal = letterOverlay.querySelector('.modal.letter');
-  if(!modal) return;
-  if(!modal.contains(e.target)) return;
-  // if message area empty -> open
-  if(letterBody.innerHTML.trim() === ''){
-    openLetter();
-  }
-});
-
-/* open letter: type message with per-line typing */
-function openLetter(){
-  // try play audio if available
-  try { bgAudio.play().catch(()=>{}); } catch(e){}
-  // animate modal (scale)
-  const modal = letterOverlay.querySelector('.modal.letter');
-  modal.animate([{transform:'scale(.96)', opacity:0},{transform:'scale(1)', opacity:1}], {duration:360, easing:'cubic-bezier(.2,.9,.2,1)'});
-  // type lines
-  let i = 0;
-  function typeNextLine(){
-    if(i >= MESSAGE_LINES.length) return;
-    const line = MESSAGE_LINES[i++];
-    const p = document.createElement('div');
-    letterBody.appendChild(p);
-    let idx = 0;
-    const speed = 18 + Math.floor(Math.random()*18);
-    function typeChar(){
-      if(idx <= line.length){
-        p.textContent = line.slice(0, idx);
-        idx++;
-        setTimeout(typeChar, speed);
+/* clicking Next shows parts step-by-step */
+let currentPart = 0;
+nextBtn.addEventListener('click', ()=>{
+  if(currentPart < PARTS.length){
+    // show current part with typewriter animation for that chunk
+    showPart(PARTS[currentPart], ()=>{
+      currentPart++;
+      if(currentPart >= PARTS.length){
+        nextBtn.textContent = 'Kết thúc ❤️';
       } else {
-        // small pause then next line
-        setTimeout(typeNextLine, 220);
+        nextBtn.textContent = 'Tiếp theo →';
       }
-    }
-    typeChar();
+    });
+  } else {
+    // finished -> launch final hearts
+    letterOverlay.classList.add('hidden');
+    spawnFloatHearts();
+    requestAnimationFrame(updateFloatHearts);
   }
-  typeNextLine();
-}
-
-/* close letter resets game */
-closeLetter.addEventListener('click', ()=>{
-  letterOverlay.classList.add('hidden');
-  confCanvas.classList.add('hidden');
-  // reset
-  collected = 0;
-  progressEl.textContent = `${collected} / ${TARGET} ❤️`;
-  // spawn new heart
-  spawnHeart();
 });
 
-/* ---------- main loop ---------- */
-let last = performance.now();
-function frame(now){
-  const dt = now - last; last = now;
-  if(running){
-    updateHeart();
+/* typewriter per part */
+function showPart(text, cb){
+  // fade previous part up and append new container
+  const partDiv = document.createElement('div');
+  partDiv.style.opacity = '0';
+  partDiv.style.marginBottom = '8px';
+  letterBody.appendChild(partDiv);
+
+  // simple fade in
+  requestAnimationFrame(()=> { partDiv.style.transition = 'opacity .28s'; partDiv.style.opacity = '1'; });
+  // typewriter
+  let idx = 0;
+  function step(){
+    const visible = text.slice(0, idx);
+    // preserve line breaks
+    partDiv.textContent = visible;
+    idx++;
+    if(idx <= text.length) setTimeout(step, 18 + Math.random()*18);
+    else { setTimeout(cb, 220); }
   }
-  ctx.clearRect(0,0,W,H);
-  if(heart.alive) drawHeart();
-  requestAnimationFrame(frame);
+  step();
 }
 
-/* ---------- start logic ---------- */
-function startGame(){
+/* ---------- tiny conf update for dvd canvas ---------- */
+function drawFrame(){
+  // update physics
+  updateHeart();
+  updateTinyConf();
+
+  // clear
+  ctx.clearRect(0,0,W,H);
+
+  // draw tiny conf first (under heart)
+  drawTinyConf();
+
+  // draw heart
+  if(heart.alive) drawHeart();
+
+  requestAnimationFrame(drawFrame);
+}
+
+/* ---------- tiny conf drawing already in drawTinyConf() above ---------- */
+
+/* ---------- pointer test to collect on dvd canvas already set earlier ---------- */
+dvdCanvas.addEventListener('pointerdown', (ev)=>{
+  // handled above; keep passive to not block
+}, {passive:true});
+
+/* ---------- start game ---------- */
+startBtn.addEventListener('click', ()=>{
   rulesOverlay.classList.remove('active');
   rulesOverlay.classList.add('hidden');
   running = true;
   collected = 0;
   progressEl.textContent = `${collected} / ${TARGET} ❤️`;
   spawnHeart();
-  requestAnimationFrame(frame);
-  requestAnimationFrame(updateConfetti);
-  // attempt to play audio (user gesture available after clicking start)
-  try { bgAudio.play().catch(()=>{}); } catch(e){}
-}
-startBtn.addEventListener('click', startGame);
+  requestAnimationFrame(drawFrame);
+});
 
-/* init */
+/* ---------- collect handler wiring (already done in pointerdown) ---------- */
+// implement pointerdown detection explicitly to ensure responsiveness
+dvdCanvas.addEventListener('pointerdown', (ev)=>{
+  if(!running) return;
+  const x = ev.clientX, y = ev.clientY;
+  if(heart.alive && pointInHeart(x,y)){
+    collectHeart();
+  }
+}, {passive:true});
+
+/* initial spawn to prepare visuals */
 spawnHeart();
-requestAnimationFrame(updateConfetti);
-requestAnimationFrame(frame);
-
-/* expose debug */
-window._spawnHeart = spawnHeart;
-window._confetti = spawnConfetti;
