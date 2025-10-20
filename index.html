@@ -3,50 +3,67 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mini-game: Săn trái tim — Gửi Mẹ</title>
-  <link rel="stylesheet" href="style2.css">
+  <title>Quà 20/10 — Gửi Mẹ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- rules popup -->
-  <div id="rulesOverlay" class="overlay active">
+  <!-- Rules popup shown on load -->
+  <div id="rulesOverlay" class="overlay active" aria-hidden="false">
     <div class="modal rules">
       <h2>💌 Luật chơi</h2>
-      <p>Bấm vào những trái tim đang di chuyển để thu thập. Mỗi lần thu, trái tim sẽ chạy nhanh hơn một chút.<br>Thu đủ <strong>10/10</strong> sẽ hiện bức thư đặc biệt.</p>
-      <button id="startBtn" class="btn">Bắt đầu</button>
+      <p>
+        Xin chào Mẹ — có một trò chơi nhỏ dành cho mẹ. <br>
+        Bấm vào những trái tim đang bay để thu thập. Mỗi lần thu tim, tốc độ sẽ tăng nhẹ. <br>
+        Khi thu đủ <strong>10 trái tim</strong>, một bức thư đặc biệt sẽ xuất hiện. <br>
+        Bấm vào thư để đọc lời chúc con gửi mẹ.
+      </p>
+      <div class="rules-actions">
+        <button id="startBtn" class="btn primary">Bắt đầu</button>
+      </div>
     </div>
   </div>
 
-  <!-- top HUD -->
+  <!-- Top HUD: progress -->
   <header id="hud">
     <div id="progress" class="progress">0 / 10 ❤️</div>
   </header>
 
-  <!-- main stage -->
+  <!-- Main stage -->
   <main id="stage">
     <div id="momWrap">
-      <img id="momImg" src="https://i.postimg.cc/wM0RX97K/IMG-20240907-115201.jpg" alt="Mẹ">
+      <img id="momImg"
+           src="https://i.postimg.cc/wM0RX97K/IMG-20240907-115201.jpg"
+           alt="Ảnh mẹ">
     </div>
 
-    <!-- hidden preloaded sprite -->
-    <img id="heartSprite" src="" alt="heart" style="display:none" aria-hidden="true">
+    <!-- Preload heart sprite (SVG data URL set in script) -->
+    <img id="heartSprite" src="" alt="" aria-hidden="true" style="display:none">
 
-    <!-- canvas for DVD heart (visible) -->
-    <canvas id="dvdCanvas"></canvas>
+    <!-- Canvas where the DVD heart moves -->
+    <canvas id="dvdCanvas" tabindex="0" aria-label="Khu vực chơi"></canvas>
 
     <!-- confetti canvas -->
-    <canvas id="confettiCanvas" class="hidden"></canvas>
+    <canvas id="confettiCanvas" class="hidden" aria-hidden="true"></canvas>
   </main>
 
-  <!-- letter popup (after win) -->
-  <div id="letterOverlay" class="overlay hidden">
+  <!-- Letter overlay (appears when win) -->
+  <div id="letterOverlay" class="overlay hidden" aria-hidden="true">
     <div class="modal letter">
-      <div class="letter-emoji">💌</div>
+      <div class="letter-top">💌</div>
       <h2>Gửi Mẹ yêu</h2>
-      <p class="wish">Con chúc mẹ luôn mạnh khỏe, hạnh phúc và mỉm cười mỗi ngày ❤️</p>
-      <button id="closeLetter" class="btn">Đóng</button>
+      <div id="letterBody" class="letter-body">
+        <!-- message will type here -->
+      </div>
+      <div class="letter-actions">
+        <button id="closeLetter" class="btn">Đóng</button>
+      </div>
     </div>
   </div>
 
-  <script src="2.js"></script>
+  <!-- background audio (will be played after user starts game) -->
+  <audio id="bgAudio" loop preload="auto"
+         src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a70595de1.mp3?filename=acoustic-guitar-ambient-10741.mp3"></audio>
+
+  <script src="script.js"></script>
 </body>
 </html>
