@@ -1,58 +1,61 @@
 :root{
-  --bgA: #fff6fb;
-  --bgB: #f3e8ff;
-  --accent: #ff6b7a;
-  --hud-bg: rgba(255,255,255,0.9);
+  --bgA:#fff6fb;
+  --bgB:#f3e8ff;
+  --accent:#ff6b7a;
+  --hud-bg: rgba(255,255,255,0.92);
 }
 
 /* reset */
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased}
-body{background:linear-gradient(140deg,var(--bgA),var(--bgB));overflow:hidden}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased}
+body{background:linear-gradient(140deg,var(--bgA),var(--bgB));overflow:hidden;color:#2b2230}
 
-/* overlay (rules or letter) */
-.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:60;pointer-events:auto}
+/* overlays (rules / letter) */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.46);z-index:900}
 .overlay.hidden{display:none}
 .overlay.active{display:flex}
 
-/* modal boxes */
-.modal{background:linear-gradient(180deg,#fff,#fff7fb);padding:18px;border-radius:12px;max-width:92%;width:420px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,0.18)}
+/* modal base */
+.modal{background:linear-gradient(180deg,#fff,#fff7fb);padding:18px;border-radius:12px;max-width:92%;width:460px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,0.18)}
 .modal h2{margin:0 0 8px;font-size:20px}
-.modal p{color:#5b3a45;line-height:1.35}
-.btn{margin-top:12px;padding:10px 14px;border-radius:10px;border:0;font-weight:800;background:linear-gradient(90deg,#ff7f9c,#ffbfcf);cursor:pointer}
+.modal p{color:#5b3a45;line-height:1.45}
 
-/* HUD progress top-left */
-#hud{position:fixed;top:14px;left:14px;z-index:50}
+/* buttons */
+.btn{border:0;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,#ff7f9c,#ffbfcf);color:#fff}
+.btn:hover{transform:translateY(-2px)}
+
+/* HUD progress */
+#hud{position:fixed;top:14px;left:14px;z-index:800}
 .progress{
   background:var(--hud-bg);padding:8px 12px;border-radius:999px;font-weight:900;color:#6b2b3a;box-shadow:0 10px 30px rgba(0,0,0,0.08);
   transition: transform .36s cubic-bezier(.2,.9,.2,1), color .25s, text-shadow .25s;
   font-size:16px;
 }
 .progress.animate{
-  color:#07c160; /* green */
+  color:#07c160;
   transform: scale(1.36);
   text-shadow: 0 6px 24px rgba(7,193,96,0.22);
 }
 
-/* stage */
+/* main stage and mom image */
 #stage{position:relative;width:100%;height:100vh;display:grid;place-items:center}
+#momWrap{width:min(72vw,520px);pointer-events:none;perspective:1200px;z-index:200}
+#momImg{width:100%;height:auto;border-radius:16px;border:6px solid rgba(255,255,255,0.9);box-shadow:0 28px 80px rgba(0,0,0,0.22);transform:translateZ(0);will-change:transform}
 
-/* mom image (tilt effect via JS) */
-#momWrap{width:min(72vw,520px);pointer-events:none;perspective:1200px;z-index:10}
-#momImg{width:100%;height:auto;border-radius:16px;border:6px solid rgba(255,255,255,0.8);box-shadow:0 28px 80px rgba(0,0,0,0.2);transform:translateZ(0);will-change:transform}
+/* canvas covers screen */
+#dvdCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:300;pointer-events:auto}
+#confettiCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:950;pointer-events:none}
+.hidden{display:none}
 
-/* DVD canvas covers whole screen and accepts clicks */
-#dvdCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:30;pointer-events:auto}
+/* letter modal style */
+.modal.letter{width:92%;max-width:540px}
+.letter-top{font-size:42px;margin-bottom:8px}
+.letter-body{min-height:160px;text-align:left;color:#55323a;font-weight:600;line-height:1.6;background:linear-gradient(180deg,rgba(255,245,248,0.6),rgba(255,250,255,0.6));padding:14px;border-radius:10px;margin:12px 0}
 
-/* confetti canvas (hidden until used) */
-#confettiCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:70;pointer-events:none}
-
-/* small letter modal style */
-.letter .letter-emoji{font-size:44px}
-.letter .wish{color:#6b2b3a;font-weight:700;margin:12px 0 14px}
-
-/* responsive tweaks */
+/* tweak small screens */
 @media (max-width:420px){
-  .modal{width:92%}
+  .modal{width:92%;padding:14px}
+  .letter-body{min-height:120px;font-size:14px}
   .progress{font-size:14px}
 }
