@@ -1,8 +1,9 @@
 :root{
   --bgA:#fff6fb;
   --bgB:#f3e8ff;
+  --hud-bg: rgba(255,255,255,0.95);
   --accent:#ff6b7a;
-  --hud-bg: rgba(255,255,255,0.92);
+  --green: #07c160;
 }
 
 /* reset */
@@ -10,12 +11,12 @@
 html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;-webkit-font-smoothing:antialiased}
 body{background:linear-gradient(140deg,var(--bgA),var(--bgB));overflow:hidden;color:#2b2230}
 
-/* overlays (rules / letter) */
+/* overlays */
 .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.46);z-index:900}
 .overlay.hidden{display:none}
 .overlay.active{display:flex}
 
-/* modal base */
+/* modal */
 .modal{background:linear-gradient(180deg,#fff,#fff7fb);padding:18px;border-radius:12px;max-width:92%;width:460px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,0.18)}
 .modal h2{margin:0 0 8px;font-size:20px}
 .modal p{color:#5b3a45;line-height:1.45}
@@ -23,9 +24,9 @@ body{background:linear-gradient(140deg,var(--bgA),var(--bgB));overflow:hidden;co
 /* buttons */
 .btn{border:0;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer}
 .btn.primary{background:linear-gradient(90deg,#ff7f9c,#ffbfcf);color:#fff}
-.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(2px)}
 
-/* HUD progress */
+/* HUD */
 #hud{position:fixed;top:14px;left:14px;z-index:800}
 .progress{
   background:var(--hud-bg);padding:8px 12px;border-radius:999px;font-weight:900;color:#6b2b3a;box-shadow:0 10px 30px rgba(0,0,0,0.08);
@@ -33,27 +34,43 @@ body{background:linear-gradient(140deg,var(--bgA),var(--bgB));overflow:hidden;co
   font-size:16px;
 }
 .progress.animate{
-  color:#07c160;
+  color:var(--green);
   transform: scale(1.36);
   text-shadow: 0 6px 24px rgba(7,193,96,0.22);
 }
 
-/* main stage and mom image */
+/* stage and mom image */
 #stage{position:relative;width:100%;height:100vh;display:grid;place-items:center}
 #momWrap{width:min(72vw,520px);pointer-events:none;perspective:1200px;z-index:200}
-#momImg{width:100%;height:auto;border-radius:16px;border:6px solid rgba(255,255,255,0.9);box-shadow:0 28px 80px rgba(0,0,0,0.22);transform:translateZ(0);will-change:transform}
+#momImg{
+  width:100%;height:auto;border-radius:16px;border:6px solid rgba(255,255,255,0.9);
+  box-shadow:0 28px 80px rgba(0,0,0,0.22);transform:translateZ(0);will-change:transform;
+  transition: transform 400ms cubic-bezier(.2,.9,.2,1);
+}
 
 /* canvas covers screen */
 #dvdCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:300;pointer-events:auto}
-#confettiCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:950;pointer-events:none}
+#floatCanvas{position:fixed;left:0;top:0;width:100%;height:100%;z-index:950;pointer-events:none}
 .hidden{display:none}
 
 /* letter modal style */
 .modal.letter{width:92%;max-width:540px}
 .letter-top{font-size:42px;margin-bottom:8px}
-.letter-body{min-height:160px;text-align:left;color:#55323a;font-weight:600;line-height:1.6;background:linear-gradient(180deg,rgba(255,245,248,0.6),rgba(255,250,255,0.6));padding:14px;border-radius:10px;margin:12px 0}
+.letter-body{min-height:180px;text-align:left;color:#55323a;font-weight:600;line-height:1.6;background:linear-gradient(180deg,rgba(255,245,248,0.6),rgba(255,250,255,0.6));padding:14px;border-radius:10px;margin:12px 0;overflow:hidden;position:relative}
 
-/* tweak small screens */
+/* sparkle (small decorative pseudo) */
+.sparkle{position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,220,240,0.9);box-shadow:0 0 8px rgba(255,200,220,0.9);opacity:0.0;}
+
+/* next button area */
+.letter-actions{display:flex;justify-content:flex-end}
+.letter-actions .btn{padding:8px 12px}
+
+/* final hearts small style (if needed via DOM) */
+.final-heart{
+  position:fixed;pointer-events:none;z-index:980;will-change:transform,opacity;
+}
+
+/* responsive */
 @media (max-width:420px){
   .modal{width:92%;padding:14px}
   .letter-body{min-height:120px;font-size:14px}
