@@ -7,14 +7,14 @@
   <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-  <!-- Rules popup shown on load -->
+  <!-- RULES popup -->
   <div id="rulesOverlay" class="overlay active" aria-hidden="false">
     <div class="modal rules">
       <h2>💌 Luật chơi</h2>
       <p>
-        Xin chào Mẹ — có một trò chơi nhỏ dành cho mẹ. <br>
-        Bấm vào những trái tim đang bay để thu thập. Mỗi lần thu tim, tốc độ sẽ tăng nhẹ. <br>
-        Khi thu đủ <strong>10 trái tim</strong>, một bức thư đặc biệt sẽ xuất hiện. <br>
+        Xin chào Mẹ — có một trò chơi nhỏ dành cho mẹ.<br>
+        Bấm vào những trái tim đang bay để thu thập. Mỗi lần thu tim, tốc độ sẽ tăng nhẹ.<br>
+        Khi thu đủ <strong>10 trái tim</strong>, một bức thư đặc biệt sẽ hiện ra.<br>
         Bấm vào thư để đọc lời chúc con gửi mẹ.
       </p>
       <div class="rules-actions">
@@ -23,12 +23,12 @@
     </div>
   </div>
 
-  <!-- Top HUD: progress -->
+  <!-- HUD -->
   <header id="hud">
     <div id="progress" class="progress">0 / 10 ❤️</div>
   </header>
 
-  <!-- Main stage -->
+  <!-- STAGE -->
   <main id="stage">
     <div id="momWrap">
       <img id="momImg"
@@ -36,33 +36,27 @@
            alt="Ảnh mẹ">
     </div>
 
-    <!-- Preload heart sprite (SVG data URL set in script) -->
+    <!-- hidden preloaded sprite -->
     <img id="heartSprite" src="" alt="" aria-hidden="true" style="display:none">
 
-    <!-- Canvas where the DVD heart moves -->
+    <!-- canvas for DVD heart -->
     <canvas id="dvdCanvas" tabindex="0" aria-label="Khu vực chơi"></canvas>
 
-    <!-- confetti canvas -->
-    <canvas id="confettiCanvas" class="hidden" aria-hidden="true"></canvas>
+    <!-- confetti-like canvas for small hearts at finish -->
+    <canvas id="floatCanvas" class="hidden" aria-hidden="true"></canvas>
   </main>
 
-  <!-- Letter overlay (appears when win) -->
+  <!-- LETTER overlay (closed until win) -->
   <div id="letterOverlay" class="overlay hidden" aria-hidden="true">
     <div class="modal letter">
       <div class="letter-top">💌</div>
       <h2>Gửi Mẹ yêu</h2>
-      <div id="letterBody" class="letter-body">
-        <!-- message will type here -->
-      </div>
+      <div id="letterBody" class="letter-body"></div>
       <div class="letter-actions">
-        <button id="closeLetter" class="btn">Đóng</button>
+        <button id="nextBtn" class="btn primary">Tiếp theo →</button>
       </div>
     </div>
   </div>
-
-  <!-- background audio (will be played after user starts game) -->
-  <audio id="bgAudio" loop preload="auto"
-         src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a70595de1.mp3?filename=acoustic-guitar-ambient-10741.mp3"></audio>
 
   <script src="2.js"></script>
 </body>
